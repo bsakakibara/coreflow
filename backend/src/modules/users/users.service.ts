@@ -1,5 +1,7 @@
 import { prisma } from "../../database/prisma";
+import { AppError } from "../../errors/AppError";
 import { CreateUserDTO, UpdateUserDTO, UserResponse } from "./users.types";
+import bcrypt from "bcrypt";
 
 export class UsersService {
 
@@ -28,11 +30,25 @@ export class UsersService {
     }
 
     async create(data: CreateUserDTO) {
+
+        const existingUser = await prisma.user.findUnique({
+            where: {
+                email: data.email
+            }
+        });
+
+        if (existingUser) {
+            throw new AppError("Este e-mail já está cadastrado.", 409);
+        }
+
+        // biblioteca bcrypt para hash de senha
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+
         return await prisma.user.create({
             data: {
                 name: data.name,
                 email: data.email,
-                password: data.password
+                password: hashedPassword
             },
             select: {
                 id: true,
@@ -45,15 +61,14 @@ export class UsersService {
         });
     }
 
-    async findById(id: number): Promise<UserResponse | null> {
+    async findById(id: number): Promise<UserResponse> {
+
         const user = await prisma.user.findUnique({
-            where: {
-                id
-            }
+            where: { id }
         });
 
         if (!user) {
-            return null;
+            throw new AppError("Usuário não encontrado.", 404);
         }
 
         return this.toResponse(user);
@@ -65,15 +80,32 @@ export class UsersService {
         });
 
         if (!user) {
-            return null;
+            throw new AppError("Usuário não encontrado.", 404);
+        }
+
+        const updateData: UpdateUserDTO = {};
+
+        if (data.name) {
+            updateData.name = data.name;
+        }
+
+        if (data.email) {
+            updateData.email = data.email;
+
+            const existingUser = await prisma.user.findUnique({
+                where: {
+                    email: data.email
+                }
+            });
+
+            if (existingUser && existingUser.id !== id) {
+                throw new AppError("Este e-mail já está cadastrado.", 409);
+            }
         }
 
         const updateUser = await prisma.user.update({
             where: { id },
-            data: {
-                name: data.name,
-                email: data.email
-            }
+            data: updateData
         });
 
         return this.toResponse(updateUser)
@@ -85,7 +117,7 @@ export class UsersService {
         });
 
         if (!user) {
-            return false;
+            throw new AppError("Usuário não encontrado.", 404);
         }
 
         await prisma.user.delete({

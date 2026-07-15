@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { statusController } from "./status.controller";
+import { StatusController } from "./status.controller";
 
 const router = Router();
-const controller = new statusController();
+const controller = new StatusController();
 
 router.get("/status", (req, res) => controller.handle(req, res));
 
