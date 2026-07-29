@@ -3,11 +3,13 @@ export interface LoginFormData {
     password: string;
 }
 
+export type UserRole = "ADMIN" | "EMPLOYEE";
+
 export interface User {
     id: number;
     name: string;
     email: string;
-    role: string;
+    role: UserRole;
 }
 
 export interface LoginResponse {

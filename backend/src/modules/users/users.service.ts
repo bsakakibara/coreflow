@@ -103,6 +103,10 @@ export class UsersService {
             }
         }
 
+        if (data.role) {
+            updateData.role = data.role;
+        }
+        
         const updateUser = await prisma.user.update({
             where: { id },
             data: updateData

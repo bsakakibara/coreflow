@@ -9,40 +9,53 @@ import {
     CircularProgress,
     Box,
     Typography,
+    IconButton,
+    Tooltip,
     TablePagination
 } from "@mui/material";
-
-import type { User } from "../../../../types/user";
-
-interface UserTableProps {
-    users: User[];
-    loading: boolean;
-    onEdit: (user: User) => void;
-    onDelete: (user: User) => void;
-}
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import {
-    IconButton,
-    Tooltip,
-} from "@mui/material";
-import { useState } from "react";
-import { useAuth } from "../../../../contexts/AuthContext";
-import { formatRole } from "../../../../utils/format";
+import type { Client } from "../../../../types/client";
 
-export function UserTable({
-    users,
+import { useAuth } from "../../../../contexts/AuthContext";
+import { useState } from "react";
+import { formatDocument, formatPhone } from "../../../../utils/format";
+
+interface ClientTableProps {
+    clients: Client[];
+    loading: boolean;
+    onEdit: (client: Client) => void;
+    onDelete: (client: Client) => void;
+}
+
+export function ClientTable({
+    clients,
     loading,
     onEdit,
     onDelete
-}: UserTableProps) {
+}: ClientTableProps) {
 
     const { user } = useAuth();
+
     const [page, setPage] = useState(0);
 
     const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    function handleChangePage(
+        _: unknown,
+        newPage: number
+    ) {
+        setPage(newPage);
+    }
+
+    function handleChangeRowsPerPage(
+        event: React.ChangeEvent<HTMLInputElement>
+    ) {
+        setRowsPerPage(Number(event.target.value));
+        setPage(0);
+    }
 
     if (loading) {
         return (
@@ -56,25 +69,6 @@ export function UserTable({
                 <CircularProgress />
             </Box>
         );
-    }
-
-    function handleChangePage(
-        _: unknown,
-        newPage: number
-    ) {
-
-        setPage(newPage);
-
-    }
-
-    function handleChangeRowsPerPage(
-        event: React.ChangeEvent<HTMLInputElement>
-    ) {
-
-        setRowsPerPage(Number(event.target.value));
-
-        setPage(0);
-
     }
 
     return (
@@ -91,7 +85,9 @@ export function UserTable({
 
                         <TableCell>E-mail</TableCell>
 
-                        <TableCell>Perfil</TableCell>
+                        <TableCell>Telefone</TableCell>
+
+                        <TableCell>Documento</TableCell>
 
                         <TableCell align="center">
                             Ações
@@ -103,18 +99,18 @@ export function UserTable({
 
                 <TableBody>
 
-                    {users.length === 0 ? (
+                    {clients.length === 0 ? (
 
                         <TableRow>
 
                             <TableCell
-                                colSpan={4}
+                                colSpan={5}
                                 align="center"
                             >
 
                                 <Typography color="text.secondary">
 
-                                    Nenhum usuário encontrado.
+                                    Nenhum cliente encontrado.
 
                                 </Typography>
 
@@ -124,25 +120,37 @@ export function UserTable({
 
                     ) : (
 
-                        users
+                        clients
                             .slice(
                                 page * rowsPerPage,
                                 page * rowsPerPage + rowsPerPage
                             )
-                            .map(item => (
+                            .map(client => (
 
-                                <TableRow key={item.id}>
+                                <TableRow key={client.id}>
 
                                     <TableCell>
-                                        {item.name}
+
+                                        {client.name}
+
                                     </TableCell>
 
                                     <TableCell>
-                                        {item.email}
+
+                                        {client.email ?? "-"}
+
                                     </TableCell>
 
                                     <TableCell>
-                                        {formatRole(item.role)}
+
+                                        {formatPhone(client.phone)}
+
+                                    </TableCell>
+
+                                    <TableCell>
+
+                                        {formatDocument(client.document)}
+
                                     </TableCell>
 
                                     <TableCell align="center">
@@ -151,9 +159,11 @@ export function UserTable({
 
                                             <IconButton
                                                 color="primary"
-                                                onClick={() => onEdit(item)}
+                                                onClick={() => onEdit(client)}
                                             >
+
                                                 <EditIcon />
+
                                             </IconButton>
 
                                         </Tooltip>
@@ -164,9 +174,11 @@ export function UserTable({
 
                                                 <IconButton
                                                     color="error"
-                                                    onClick={() => onDelete(item)}
+                                                    onClick={() => onDelete(client)}
                                                 >
+
                                                     <DeleteIcon />
+
                                                 </IconButton>
 
                                             </Tooltip>
@@ -187,7 +199,7 @@ export function UserTable({
 
             <TablePagination
                 component="div"
-                count={users.length}
+                count={clients.length}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}

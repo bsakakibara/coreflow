@@ -6,11 +6,11 @@
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
-  },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "prisma.config.ts"
-  ]
+    "skipLibCheck": true,
+
+    "typeRoots": [
+      "./src/@types",
+      "./node_modules/@types"
+    ]
+  }
 }

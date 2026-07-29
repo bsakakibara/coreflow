@@ -1,6 +1,7 @@
 import {
   Box,
-  Button
+  Button,
+  TextField
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -32,42 +33,65 @@ export function Users() {
     deleteUser
   } = useUsers();
 
+  const [search, setSearch] = useState("");
+
+  const filteredUsers = users.filter(user =>
+    user.name
+      .toLowerCase()
+      .includes(search.toLowerCase()) ||
+
+    user.email
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  function handleCreate() {
+
+    setSelectedUser(null);
+
+    setOpenModal(true);
+
+  }
+
   return (
 
     <>
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 4
-        }}
+      <PageHeader
+        title="Usuários"
+        subtitle="Gerencie os usuários cadastrados."
       >
 
-        <PageHeader
-          title="Usuários"
-          subtitle="Gerencie todos os usuários do sistema."
-        />
-
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => {
-
-            setSelectedUser(null);
-
-            setOpenModal(true);
-
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            alignItems: "center"
           }}
         >
-          Novo Usuário
-        </Button>
 
-      </Box>
+          <TextField
+            size="small"
+            placeholder="Pesquisar..."
+            value={search}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
+          />
+
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleCreate}
+          >
+            Novo Usuário
+          </Button>
+
+        </Box>
+
+      </PageHeader>
 
       <UserTable
-        users={users}
+        users={filteredUsers}
         loading={loading}
         onEdit={(user) => {
 

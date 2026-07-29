@@ -7,6 +7,9 @@ export function authMiddleware(
     res: Response,
     next: NextFunction
 ) {
+
+    // testando autorização
+    // console.log(req.headers.authorization);
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {

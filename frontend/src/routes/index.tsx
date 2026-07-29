@@ -5,6 +5,7 @@ import { Login } from "../pages/Login";
 import { Dashboard } from "../pages/Dashboard";
 import { Users } from "../pages/Users";
 import { MainLayout } from "../layouts/MainLayout";
+import { Clients } from "../pages/Clients";
 
 export function AppRoutes() {
     return (
@@ -32,8 +33,17 @@ export function AppRoutes() {
                     <Route
                         path="/users"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute roles={["ADMIN"]}>
                                 <Users />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/clients"
+                        element={
+                            <ProtectedRoute>
+                                <Clients />
                             </ProtectedRoute>
                         }
                     />
