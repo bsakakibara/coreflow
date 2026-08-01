@@ -4,6 +4,7 @@ import { usersRoutes } from "./modules/users/users.routes";
 import { authRoutes } from "./modules/auth/auth.routes";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { clientsRoutes } from "./modules/clients/clients.routes";
+import productsRoutes from "./modules/products/products.routes";
 import cors from "cors";
 
 const app = express();
@@ -23,6 +24,8 @@ app.use("/users", usersRoutes);
 app.use(authRoutes)
 
 app.use("/clients", clientsRoutes);
+
+app.use("/products", productsRoutes);
 
 app.use(errorMiddleware)
 

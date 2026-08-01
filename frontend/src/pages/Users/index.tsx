@@ -1,7 +1,5 @@
 import {
-  Box,
-  Button,
-  TextField
+  Button
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -15,6 +13,8 @@ import { UserModal } from "./components/UserModal";
 import { useUsers } from "../../hooks/useUsers";
 import type { User } from "../../types/user";
 import { ConfirmDialog } from "../../components/common/ConfirmDialog";
+import { PageActions } from "../../components/common/PageActions";
+import { SearchField } from "../../components/common/SearchField";
 
 export function Users() {
 
@@ -61,21 +61,11 @@ export function Users() {
         subtitle="Gerencie os usuários cadastrados."
       >
 
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            alignItems: "center"
-          }}
-        >
+        <PageActions>
 
-          <TextField
-            size="small"
-            placeholder="Pesquisar..."
+          <SearchField
             value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
+            onChange={setSearch}
           />
 
           <Button
@@ -86,7 +76,7 @@ export function Users() {
             Novo Usuário
           </Button>
 
-        </Box>
+        </PageActions>
 
       </PageHeader>
 

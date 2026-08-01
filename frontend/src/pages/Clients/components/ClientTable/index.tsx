@@ -6,8 +6,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    CircularProgress,
-    Box,
     Typography,
     IconButton,
     Tooltip,
@@ -22,6 +20,7 @@ import type { Client } from "../../../../types/client";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useState } from "react";
 import { formatDocument, formatPhone } from "../../../../utils/format";
+import { PageLoader } from "../../../../components/common/PageLoader";
 
 interface ClientTableProps {
     clients: Client[];
@@ -58,17 +57,9 @@ export function ClientTable({
     }
 
     if (loading) {
-        return (
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    py: 6
-                }}
-            >
-                <CircularProgress />
-            </Box>
-        );
+
+        return <PageLoader />;
+
     }
 
     return (

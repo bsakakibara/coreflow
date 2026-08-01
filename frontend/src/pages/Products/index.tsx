@@ -2,113 +2,90 @@ import { useState } from "react";
 
 import {
     Box,
-    Button,
+    Button
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 
 import { PageHeader } from "../../components/common/PageHeader";
 
-import { useClients } from "../../hooks/useClients";
+import { useProducts } from "../../hooks/useProducts";
 
-import { ClientTable } from "./components/ClientTable";
-import { ClientModal } from "./components/ClientModal";
+import { ProductTable } from "./components/ProductTable";
+import { ProductModal } from "./components/ProductModal";
 
-import type { Client } from "../../types/client";
+import type { Product } from "../../types/product";
+
 import { ConfirmDialog } from "../../components/common/ConfirmDialog";
 import { PageActions } from "../../components/common/PageActions";
 import { SearchField } from "../../components/common/SearchField";
 
-export function Clients() {
+export function Products() {
 
     const {
-        clients,
+        products,
         loading,
-        loadClients,
-        deleteClient
-    } = useClients();
+        loadProducts,
+        deleteProduct
+    } = useProducts();
 
     const [openModal, setOpenModal] =
         useState(false);
 
-    const [selectedClient,
-        setSelectedClient] =
-        useState<Client | null>(null);
+    const [selectedProduct, setSelectedProduct] =
+        useState<Product | null>(null);
 
     const [search, setSearch] = useState("");
 
-    const filteredClients = clients.filter(client =>
-        client.name
+    const filteredProducts = products.filter(product =>
+        product.name
             .toLowerCase()
             .includes(search.toLowerCase()) ||
 
-        (client.email ?? "")
+        (product.sku ?? "")
             .toLowerCase()
             .includes(search.toLowerCase()) ||
 
-        (client.phone ?? "")
-            .toLowerCase()
-            .includes(search.toLowerCase()) ||
-
-        (client.document ?? "")
+        (product.description ?? "")
             .toLowerCase()
             .includes(search.toLowerCase())
     );
 
     function handleCreate() {
-
-        setSelectedClient(null);
-
+        setSelectedProduct(null);
         setOpenModal(true);
-
     }
 
-    function handleEdit(client: Client) {
-
-        setSelectedClient(client);
-
+    function handleEdit(product: Product) {
+        setSelectedProduct(product);
         setOpenModal(true);
-
     }
 
     function handleCloseModal() {
-
         setOpenModal(false);
-
     }
 
     const [openConfirm, setOpenConfirm] =
         useState(false);
 
-    const [clientToDelete, setClientToDelete] =
-        useState<Client | null>(null);
+    const [productToDelete, setProductToDelete] =
+        useState<Product | null>(null);
 
-    function handleDelete(client: Client) {
-
-        setClientToDelete(client);
-
+    function handleDelete(product: Product) {
+        setProductToDelete(product);
         setOpenConfirm(true);
-
     }
 
     async function handleConfirmDelete() {
-
-        if (!clientToDelete) return;
-
-        await deleteClient(clientToDelete.id);
-
+        if (!productToDelete) return;
+        await deleteProduct(productToDelete.id);
         setOpenConfirm(false);
-
-        setClientToDelete(null);
-
+        setProductToDelete(null);
     }
 
     function handleCloseConfirm() {
-
         setOpenConfirm(false);
-
-        setClientToDelete(null);
-
+        setProductToDelete(null);
     }
 
     return (
@@ -116,8 +93,8 @@ export function Clients() {
         <>
 
             <PageHeader
-                title="Clientes"
-                subtitle="Gerencie os clientes cadastrados."
+                title="Produtos"
+                subtitle="Gerencie os produtos cadastrados."
             >
 
                 <PageActions>
@@ -132,21 +109,17 @@ export function Clients() {
                         startIcon={<AddIcon />}
                         onClick={handleCreate}
                     >
-                        Novo Cliente
+                        Novo Produto
                     </Button>
 
                 </PageActions>
 
             </PageHeader>
 
-            <Box
-                sx={{
-                    mt: 3
-                }}
-            >
+            <Box sx={{ mt: 3 }}>
 
-                <ClientTable
-                    clients={filteredClients}
+                <ProductTable
+                    products={filteredProducts}
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
@@ -154,18 +127,18 @@ export function Clients() {
 
             </Box>
 
-            <ClientModal
+            <ProductModal
                 open={openModal}
-                client={selectedClient}
+                product={selectedProduct}
                 onClose={handleCloseModal}
-                onSuccess={loadClients}
+                onSuccess={loadProducts}
             />
 
             <ConfirmDialog
                 open={openConfirm}
-                title="Excluir Cliente"
+                title="Excluir Produto"
                 message={
-                    `Deseja realmente excluir o cliente "${clientToDelete?.name}"?`
+                    `Deseja realmente excluir o produto "${productToDelete?.name}"?`
                 }
                 onClose={handleCloseConfirm}
                 onConfirm={handleConfirmDelete}

@@ -7,65 +7,56 @@ import {
     TableHead,
     TableRow,
     Typography,
+    IconButton,
+    Tooltip,
     TablePagination
 } from "@mui/material";
-
-import type { User } from "../../../../types/user";
-
-interface UserTableProps {
-    users: User[];
-    loading: boolean;
-    onEdit: (user: User) => void;
-    onDelete: (user: User) => void;
-}
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import {
-    IconButton,
-    Tooltip,
-} from "@mui/material";
-import { useState } from "react";
+import type { Product } from "../../../../types/product";
+
 import { useAuth } from "../../../../contexts/AuthContext";
-import { formatRole } from "../../../../utils/format";
+import { useState } from "react";
 import { PageLoader } from "../../../../components/common/PageLoader";
 
-export function UserTable({
-    users,
+interface ProductTableProps {
+    products: Product[];
+    loading: boolean;
+    onEdit: (product: Product) => void;
+    onDelete: (product: Product) => void;
+}
+
+export function ProductTable({
+    products,
     loading,
     onEdit,
     onDelete
-}: UserTableProps) {
+}: ProductTableProps) {
 
     const { user } = useAuth();
+
     const [page, setPage] = useState(0);
 
     const [rowsPerPage, setRowsPerPage] = useState(10);
-
-    if (loading) {
-
-        return <PageLoader />;
-
-    }
 
     function handleChangePage(
         _: unknown,
         newPage: number
     ) {
-
         setPage(newPage);
-
     }
 
     function handleChangeRowsPerPage(
         event: React.ChangeEvent<HTMLInputElement>
     ) {
-
         setRowsPerPage(Number(event.target.value));
-
         setPage(0);
+    }
 
+    if (loading) {
+        return <PageLoader />;
     }
 
     return (
@@ -80,9 +71,13 @@ export function UserTable({
 
                         <TableCell>Nome</TableCell>
 
-                        <TableCell>E-mail</TableCell>
+                        <TableCell>Descrição</TableCell>
 
-                        <TableCell>Perfil</TableCell>
+                        <TableCell>SKU</TableCell>
+
+                        <TableCell>Preço</TableCell>
+
+                        <TableCell>Estoque</TableCell>
 
                         <TableCell align="center">
                             Ações
@@ -94,19 +89,17 @@ export function UserTable({
 
                 <TableBody>
 
-                    {users.length === 0 ? (
+                    {products.length === 0 ? (
 
                         <TableRow>
 
                             <TableCell
-                                colSpan={4}
+                                colSpan={6}
                                 align="center"
                             >
 
                                 <Typography color="text.secondary">
-
-                                    Nenhum usuário encontrado.
-
+                                    Nenhum produto encontrado.
                                 </Typography>
 
                             </TableCell>
@@ -115,25 +108,36 @@ export function UserTable({
 
                     ) : (
 
-                        users
+                        products
                             .slice(
                                 page * rowsPerPage,
                                 page * rowsPerPage + rowsPerPage
                             )
-                            .map(item => (
+                            .map(product => (
 
-                                <TableRow key={item.id}>
+                                <TableRow key={product.id}>
 
                                     <TableCell>
-                                        {item.name}
+                                        {product.name}
                                     </TableCell>
 
                                     <TableCell>
-                                        {item.email}
+                                        {product.description ?? "-"}
                                     </TableCell>
 
                                     <TableCell>
-                                        {formatRole(item.role)}
+                                        {product.sku ?? "-"}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {Number(product.price).toLocaleString("pt-BR", {
+                                            style: "currency",
+                                            currency: "BRL"
+                                        })}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {product.stock}
                                     </TableCell>
 
                                     <TableCell align="center">
@@ -142,7 +146,7 @@ export function UserTable({
 
                                             <IconButton
                                                 color="primary"
-                                                onClick={() => onEdit(item)}
+                                                onClick={() => onEdit(product)}
                                             >
                                                 <EditIcon />
                                             </IconButton>
@@ -155,7 +159,7 @@ export function UserTable({
 
                                                 <IconButton
                                                     color="error"
-                                                    onClick={() => onDelete(item)}
+                                                    onClick={() => onDelete(product)}
                                                 >
                                                     <DeleteIcon />
                                                 </IconButton>
@@ -178,7 +182,7 @@ export function UserTable({
 
             <TablePagination
                 component="div"
-                count={users.length}
+                count={products.length}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
