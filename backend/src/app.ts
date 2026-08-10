@@ -6,6 +6,7 @@ import { errorMiddleware } from "./middlewares/error.middleware";
 import { clientsRoutes } from "./modules/clients/clients.routes";
 import productsRoutes from "./modules/products/products.routes";
 import cors from "cors";
+import { ordersRoutes } from "./modules/orders/orders.routes";
 
 const app = express();
 
@@ -26,6 +27,8 @@ app.use(authRoutes)
 app.use("/clients", clientsRoutes);
 
 app.use("/products", productsRoutes);
+
+app.use("/orders", ordersRoutes);
 
 app.use(errorMiddleware)
 

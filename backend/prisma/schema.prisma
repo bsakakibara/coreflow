@@ -35,6 +35,9 @@ model Client {
   email      String?  @unique
   phone      String?
   document   String?  @unique
+
+  orders Order[]
+  
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -47,6 +50,36 @@ model Product {
   price       Decimal  @db.Decimal(10, 2)
   stock       Int      @default(0)
 
+  orderItems  OrderItem[]
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+
+  clientId   Int
+  client     Client      @relation(fields: [clientId], references: [id])
+
+  status     String      @default("PENDENTE")
+  total      Decimal     @db.Decimal(10,2)
+
+  items      OrderItem[]
+
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model OrderItem {
+  id         Int       @id @default(autoincrement())
+
+  orderId    Int
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId  Int
+  product    Product   @relation(fields: [productId], references: [id])
+
+  quantity   Int
+  price      Decimal   @db.Decimal(10,2)
 }
