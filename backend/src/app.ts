@@ -7,6 +7,8 @@ import { clientsRoutes } from "./modules/clients/clients.routes";
 import productsRoutes from "./modules/products/products.routes";
 import cors from "cors";
 import { ordersRoutes } from "./modules/orders/orders.routes";
+import { dashboardRoutes } from "./modules/dashboard/dashboard.routes";
+import { reportsRoutes } from "./modules/reports/reports.routes";
 
 const app = express();
 
@@ -23,6 +25,10 @@ app.use(statusRouter);
 app.use("/users", usersRoutes);
 
 app.use(authRoutes)
+
+app.use(dashboardRoutes);
+
+app.use(reportsRoutes);
 
 app.use("/clients", clientsRoutes);
 

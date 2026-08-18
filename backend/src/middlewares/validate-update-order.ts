@@ -6,32 +6,32 @@ export function validateUpdateOrder(
     next: NextFunction
 ): void {
 
-    const {
-        clientId,
-        items
-    } = req.body;
+    const { status } = req.body;
 
-    if (clientId !== undefined && Number(clientId) <= 0) {
+    const allowedStatuses = [
+        "PENDENTE",
+        "PROCESSANDO",
+        "CONCLUÍDO",
+        "CANCELADO"
+    ];
+
+    if (!status) {
 
         res.status(400).json({
-            message: "Cliente inválido."
+            message: "O status é obrigatório."
         });
 
         return;
 
     }
 
-    if (items !== undefined) {
+    if (!allowedStatuses.includes(status)) {
 
-        if (!Array.isArray(items) || items.length === 0) {
+        res.status(400).json({
+            message: "Status inválido."
+        });
 
-            res.status(400).json({
-                message: "O pedido deve possuir ao menos um item."
-            });
-
-            return;
-
-        }
+        return;
 
     }
 

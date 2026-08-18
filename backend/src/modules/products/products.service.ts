@@ -1,4 +1,6 @@
 import { prisma } from "../../database/prisma";
+import { AppError } from "../../errors/AppError";
+
 import {
     CreateProductDTO,
     UpdateProductDTO
@@ -32,11 +34,28 @@ class ProductsService {
 
     async create(data: CreateProductDTO) {
 
-        return prisma.product.create({
+        try {
 
-            data
+            return await prisma.product.create({
 
-        });
+                data
+
+            });
+
+        } catch (error: any) {
+
+            if (error?.code === "P2002") {
+
+                throw new AppError(
+                    "Este SKU já está cadastrado.",
+                    409
+                );
+
+            }
+
+            throw error;
+
+        }
 
     }
 
@@ -45,15 +64,32 @@ class ProductsService {
         data: UpdateProductDTO
     ) {
 
-        return prisma.product.update({
+        try {
 
-            where: {
-                id
-            },
+            return await prisma.product.update({
 
-            data
+                where: {
+                    id
+                },
 
-        });
+                data
+
+            });
+
+        } catch (error: any) {
+
+            if (error?.code === "P2002") {
+
+                throw new AppError(
+                    "Este SKU já está cadastrado.",
+                    409
+                );
+
+            }
+
+            throw error;
+
+        }
 
     }
 

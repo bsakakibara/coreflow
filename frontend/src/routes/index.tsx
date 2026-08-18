@@ -8,6 +8,7 @@ import { MainLayout } from "../layouts/MainLayout";
 import { Clients } from "../pages/Clients";
 import { Products } from "../pages/Products";
 import { Orders } from "../pages/Orders";
+import { Reports } from "../pages/Reports";
 
 export function AppRoutes() {
     return (
@@ -64,6 +65,15 @@ export function AppRoutes() {
                         element={
                             <ProtectedRoute>
                                 <Orders />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/reports"
+                        element={
+                            <ProtectedRoute>
+                                <Reports />
                             </ProtectedRoute>
                         }
                     />

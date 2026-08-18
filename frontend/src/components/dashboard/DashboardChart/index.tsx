@@ -9,19 +9,19 @@ import {
     LineChart,
     Line,
     XAxis,
-    Tooltip
+    Tooltip,
+    YAxis
 } from "recharts";
 
-const data = [
-    { month: "Jan", total: 120 },
-    { month: "Fev", total: 240 },
-    { month: "Mar", total: 180 },
-    { month: "Abr", total: 320 },
-    { month: "Mai", total: 290 },
-    { month: "Jun", total: 420 }
-];
+import type { DashboardChartItem } from "../../../types/dashboard";
 
-export function DashboardChart() {
+interface DashboardChartProps {
+    data: DashboardChartItem[];
+}
+
+export function DashboardChart({
+    data
+}: DashboardChartProps) {
 
     return (
 
@@ -50,7 +50,11 @@ export function DashboardChart() {
 
                     <LineChart data={data}>
 
-                        <XAxis dataKey="month" />
+                        <XAxis
+                            dataKey="month"
+                        />
+
+                        <YAxis />
 
                         <Tooltip />
 
@@ -70,5 +74,4 @@ export function DashboardChart() {
         </Card>
 
     );
-
 }

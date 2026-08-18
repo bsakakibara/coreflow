@@ -1,4 +1,5 @@
 import { prisma } from "../../database/prisma";
+import { AppError } from "../../errors/AppError";
 
 import {
     CreateOrderDTO,
@@ -83,7 +84,7 @@ class OrdersService {
 
             if (!client) {
 
-                throw new Error("Cliente não encontrado.");
+                throw new AppError("Cliente não encontrado.", 404);
 
             }
 
@@ -113,7 +114,7 @@ class OrdersService {
 
                 if (!product) {
 
-                    throw new Error("Produto não encontrado.");
+                    throw new AppError("Produto não encontrado.", 404);
 
                 }
 
@@ -208,6 +209,22 @@ class OrdersService {
         data: UpdateOrderDTO
     ) {
 
+        const order = await prisma.order.findUnique({
+
+            where: {
+
+                id
+
+            }
+
+        });
+
+        if (!order) {
+
+            throw new Error("Pedido não encontrado.");
+
+        }
+
         return prisma.order.update({
 
             where: {
@@ -224,13 +241,63 @@ class OrdersService {
 
     async delete(id: number) {
 
-        return prisma.order.delete({
+        return prisma.$transaction(async (tx) => {
 
-            where: {
+            const order = await tx.order.findUnique({
 
-                id
+                where: {
+
+                    id
+
+                },
+
+                include: {
+
+                    items: true
+
+                }
+
+            });
+
+            if (!order) {
+
+                throw new AppError("Pedido não encontrado.", 404);
 
             }
+
+            for (const item of order.items) {
+
+                await tx.product.update({
+
+                    where: {
+
+                        id: item.productId
+
+                    },
+
+                    data: {
+
+                        stock: {
+
+                            increment: item.quantity
+
+                        }
+
+                    }
+
+                });
+
+            }
+
+            await tx.order.delete({
+
+                where: {
+
+                    id
+
+                }
+
+            });
 
         });
 

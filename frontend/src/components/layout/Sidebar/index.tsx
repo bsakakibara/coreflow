@@ -16,16 +16,19 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 
 import { NavLink, useLocation } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
 
 interface MenuItem {
     title: string;
     path: string;
     icon: React.ReactNode;
+    roles?: string[];
 }
 
 export function Sidebar() {
 
     const location = useLocation();
+    const { user } = useAuth();
 
     const menus: MenuItem[] = [
         {
@@ -36,7 +39,8 @@ export function Sidebar() {
         {
             title: "Usuários",
             path: "/users",
-            icon: <PeopleIcon />
+            icon: <PeopleIcon />,
+            roles: ["ADMIN"]
         },
         {
             title: "Clientes",
@@ -59,6 +63,12 @@ export function Sidebar() {
             icon: <AssessmentIcon />
         }
     ];
+
+    const visibleMenus = menus.filter(
+        (menu) =>
+            !menu.roles ||
+            (user && menu.roles.includes(user.role))
+    );
 
     return (
         <Box
@@ -102,7 +112,7 @@ export function Sidebar() {
 
             <List sx={{ mt: 2 }}>
 
-                {menus.map((menu) => (
+                {visibleMenus.map((menu) => (
 
                     <ListItemButton
                         key={menu.path}

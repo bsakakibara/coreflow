@@ -60,7 +60,23 @@ export class UsersController {
 
             const id = Number(req.params.id);
 
-            const user = await usersService.update(id, req.body);
+            // ADMIN pode editar qualquer usuário.
+            // EMPLOYEE pode editar apenas o próprio usuário.
+            if (
+                req.user.role !== "ADMIN" &&
+                req.user.id !== id
+            ) {
+                res.status(403).json({
+                    message: "Acesso negado"
+                });
+
+                return;
+            }
+
+            const user = await usersService.update(
+                id,
+                req.body
+            );
 
             res.json(user);
 

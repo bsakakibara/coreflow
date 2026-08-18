@@ -6,6 +6,8 @@ import { authMiddleware } from "../../middlewares/auth.middleware";
 
 import { validateCreateProduct } from "../../middlewares/validate-create-product";
 import { validateUpdateProduct } from "../../middlewares/validate-update-product";
+import { roleMiddleware } from "../../middlewares/role.middleware";
+import { Role } from "../../generated/prisma/enums";
 
 const router = Router();
 
@@ -35,6 +37,7 @@ router.put(
 
 router.delete(
     "/:id",
+    roleMiddleware([Role.ADMIN]),
     productsController.delete
 );
 

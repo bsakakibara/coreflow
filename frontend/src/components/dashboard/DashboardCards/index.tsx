@@ -7,7 +7,18 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 import { DashboardCard } from "../DashboardCard";
 
-export function DashboardCards() {
+import type { Dashboard } from "../../../types/dashboard";
+import { useAuth } from "../../../contexts/AuthContext";
+
+interface DashboardCardsProps {
+    dashboard: Dashboard;
+}
+
+export function DashboardCards({
+    dashboard
+}: DashboardCardsProps) {
+
+    const { user } = useAuth();
 
     return (
 
@@ -16,44 +27,48 @@ export function DashboardCards() {
             spacing={3}
         >
 
-            <Grid size={{ xs: 12, md: 6, lg: 3 }}>
+            {user?.role === "ADMIN" && (
 
-                <DashboardCard
-                    title="Usuários"
-                    value={126}
-                    color="#2563eb"
-                    icon={<PeopleIcon />}
-                />
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
-            </Grid>
+                    <DashboardCard
+                        title="Usuários"
+                        value={dashboard.users}
+                        color="#2563eb"
+                        icon={<PeopleIcon />}
+                    />
 
-            <Grid size={{ xs: 12, md: 6, lg: 3 }}>
+                </Grid>
+
+            )}
+
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                 <DashboardCard
                     title="Clientes"
-                    value={845}
+                    value={dashboard.clients}
                     color="#22c55e"
                     icon={<BusinessIcon />}
                 />
 
             </Grid>
 
-            <Grid size={{ xs: 12, md: 6, lg: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                 <DashboardCard
                     title="Produtos"
-                    value={582}
+                    value={dashboard.products}
                     color="#f59e0b"
                     icon={<Inventory2Icon />}
                 />
 
             </Grid>
 
-            <Grid size={{ xs: 12, md: 6, lg: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                 <DashboardCard
                     title="Pedidos"
-                    value={42}
+                    value={dashboard.orders}
                     color="#ef4444"
                     icon={<ShoppingCartIcon />}
                 />
@@ -63,5 +78,4 @@ export function DashboardCards() {
         </Grid>
 
     );
-
 }
