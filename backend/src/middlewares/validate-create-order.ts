@@ -11,14 +11,16 @@ export function validateCreateOrder(
         items
     } = req.body;
 
-    if (!clientId) {
+    if (
+        !Number.isInteger(clientId) ||
+        clientId < 1
+    ) {
 
         res.status(400).json({
-            message: "O cliente é obrigatório."
+            message: "O cliente deve ser um número inteiro maior ou igual a 1."
         });
 
         return;
-
     }
 
     if (!Array.isArray(items) || items.length === 0) {
@@ -28,22 +30,27 @@ export function validateCreateOrder(
         });
 
         return;
-
     }
 
     for (const item of items) {
 
-        if (!item.productId) {
+        if (
+            !item ||
+            !Number.isInteger(item.productId) ||
+            item.productId < 1
+        ) {
 
             res.status(400).json({
-                message: "O produto é obrigatório."
+                message: "O produto deve ser um número inteiro maior ou igual a 1."
             });
 
             return;
-
         }
 
-        if (item.quantity === undefined || item.quantity === null) {
+        if (
+            item.quantity === undefined ||
+            item.quantity === null
+        ) {
 
             res.status(400).json({
                 message: "A quantidade é obrigatória."

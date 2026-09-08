@@ -1,4 +1,5 @@
 import {
+  Box,
   Button
 } from "@mui/material";
 
@@ -73,7 +74,15 @@ export function Users() {
             startIcon={<AddIcon />}
             onClick={handleCreate}
           >
-            Novo Usuário
+            <Box
+              component="span"
+              sx={{
+                display: { xs: "none", sm: "inline" }
+              }}
+            >
+              Novo&nbsp;
+            </Box>
+            Usuário
           </Button>
 
         </PageActions>

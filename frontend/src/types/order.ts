@@ -1,12 +1,13 @@
+export type OrderStatus =
+    | "PENDENTE"
+    | "CONCLUIDO"
+    | "CANCELADO";
+
 export interface OrderItem {
     id: number;
-
     orderId: number;
-
     productId: number;
-
     quantity: number;
-
     price: number;
 
     product: {
@@ -18,15 +19,10 @@ export interface OrderItem {
 
 export interface Order {
     id: number;
-
     clientId: number;
-
-    status: string;
-
+    status: OrderStatus;
     total: number;
-
     createdAt: string;
-
     updatedAt: string;
 
     client: {
@@ -47,5 +43,11 @@ export interface CreateOrderDTO {
 }
 
 export interface UpdateOrderDTO {
-    status: string;
+    clientId?: number;
+    status?: OrderStatus;
+
+    items?: {
+        productId: number;
+        quantity: number;
+    }[];
 }

@@ -45,6 +45,7 @@ usersRoutes.post(
 usersRoutes.put(
   "/:id",
   authMiddleware,
+  roleMiddleware([Role.ADMIN]),
   validateUpdateUser,
   (req, res, next) => {
     return usersController.update(req, res, next);

@@ -12,12 +12,64 @@ export class DashboardService {
             users,
             clients,
             products,
-            orders
+            orders,
+            ordersByStatus
         ] = await Promise.all([
             prisma.user.count(),
+
             prisma.client.count(),
+
             prisma.product.count(),
-            prisma.order.count()
+
+            prisma.order.count(),
+
+            prisma.order.groupBy({
+                by: ["status"],
+                _count: {
+                    _all: true
+                }
+            })
+        ]);
+
+        const now = new Date();
+
+        const startOfMonth = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            1
+        );
+
+        const startOfNextMonth = new Date(
+            now.getFullYear(),
+            now.getMonth() + 1,
+            1
+        );
+
+        const [
+            currentMonthOrders,
+            currentMonthSales
+        ] = await Promise.all([
+
+            prisma.order.count({
+                where: {
+                    createdAt: {
+                        gte: startOfMonth,
+                        lt: startOfNextMonth
+                    }
+                }
+            }),
+
+            prisma.order.aggregate({
+                _sum: {
+                    total: true
+                },
+                where: {
+                    createdAt: {
+                        gte: startOfMonth,
+                        lt: startOfNextMonth
+                    }
+                }
+            })
         ]);
 
         const ordersByMonth = await prisma.order.findMany({
@@ -61,12 +113,41 @@ export class DashboardService {
                 })
             );
 
+        const statusMap = {
+            PENDENTE: 0,
+            CONCLUIDO: 0,
+            CANCELADO: 0
+        };
+
+        for (const item of ordersByStatus) {
+            statusMap[item.status] = item._count._all;
+        }
+
         return {
             users,
             clients,
             products,
             orders,
-            chart
+            chart,
+
+            ordersByStatus: [
+                {
+                    status: "PENDENTE",
+                    total: statusMap.PENDENTE
+                },
+                {
+                    status: "CONCLUIDO",
+                    total: statusMap.CONCLUIDO
+                },
+                {
+                    status: "CANCELADO",
+                    total: statusMap.CANCELADO
+                }
+            ],
+
+            currentMonthOrders,
+            currentMonthSales:
+                Number(currentMonthSales._sum.total ?? 0)
         };
     }
 }

@@ -19,6 +19,12 @@ enum Role {
   EMPLOYEE
 }
 
+enum OrderStatus {
+  PENDENTE
+  CONCLUIDO
+  CANCELADO
+}
+
 model User {
   id  Int   @id @default(autoincrement())
   name  String
@@ -62,8 +68,10 @@ model Order {
   clientId   Int
   client     Client      @relation(fields: [clientId], references: [id])
 
-  status     String      @default("PENDENTE")
+  status     OrderStatus @default(PENDENTE)
   total      Decimal     @db.Decimal(10,2)
+
+  stockReleased Boolean @default(false)
 
   items      OrderItem[]
 

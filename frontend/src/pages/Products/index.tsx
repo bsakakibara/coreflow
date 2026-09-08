@@ -109,7 +109,15 @@ export function Products() {
                         startIcon={<AddIcon />}
                         onClick={handleCreate}
                     >
-                        Novo Produto
+                        <Box
+                            component="span"
+                            sx={{
+                                display: { xs: "none", sm: "inline" }
+                            }}
+                        >
+                            Novo&nbsp;
+                        </Box>
+                        Produto
                     </Button>
 
                 </PageActions>

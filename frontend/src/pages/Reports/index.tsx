@@ -85,7 +85,8 @@ export function Reports() {
                         elevation={0}
                         sx={{
                             borderRadius: 3,
-                            border: "1px solid #e5e7eb"
+                            border: "1px solid",
+                            borderColor: "divider"
                         }}
                     >
 
@@ -120,7 +121,8 @@ export function Reports() {
                         elevation={0}
                         sx={{
                             borderRadius: 3,
-                            border: "1px solid #e5e7eb"
+                            border: "1px solid",
+                            borderColor: "divider"
                         }}
                     >
 
@@ -164,7 +166,8 @@ export function Reports() {
                 sx={{
                     mt: 4,
                     borderRadius: 3,
-                    border: "1px solid #e5e7eb"
+                    border: "1px solid",
+                    borderColor: "divider"
                 }}
             >
 
@@ -243,7 +246,8 @@ export function Reports() {
                 sx={{
                     mt: 4,
                     borderRadius: 3,
-                    border: "1px solid #e5e7eb"
+                    border: "1px solid",
+                    borderColor: "divider"
                 }}
             >
 
@@ -316,7 +320,8 @@ export function Reports() {
                 sx={{
                     mt: 4,
                     borderRadius: 3,
-                    border: "1px solid #e5e7eb"
+                    border: "1px solid",
+                    borderColor: "divider"
                 }}
             >
 

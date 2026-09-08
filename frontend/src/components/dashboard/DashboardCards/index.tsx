@@ -21,61 +21,53 @@ export function DashboardCards({
     const { user } = useAuth();
 
     return (
-
         <Grid
             container
             spacing={3}
         >
 
             {user?.role === "ADMIN" && (
-
                 <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-
                     <DashboardCard
                         title="Usuários"
                         value={dashboard.users}
+                        subtitle="Total cadastrado"
                         color="#2563eb"
                         icon={<PeopleIcon />}
                     />
-
                 </Grid>
-
             )}
 
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-
                 <DashboardCard
                     title="Clientes"
                     value={dashboard.clients}
+                    subtitle="Total cadastrado"
                     color="#22c55e"
                     icon={<BusinessIcon />}
                 />
-
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-
                 <DashboardCard
                     title="Produtos"
                     value={dashboard.products}
+                    subtitle="Total cadastrado"
                     color="#f59e0b"
                     icon={<Inventory2Icon />}
                 />
-
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-
                 <DashboardCard
                     title="Pedidos"
                     value={dashboard.orders}
+                    subtitle={`${dashboard.currentMonthOrders} neste mês`}
                     color="#ef4444"
                     icon={<ShoppingCartIcon />}
                 />
-
             </Grid>
 
         </Grid>
-
     );
 }

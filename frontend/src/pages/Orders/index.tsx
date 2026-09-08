@@ -1,31 +1,27 @@
+import { useState } from "react";
 import {
     Box,
     Button,
-    Typography
 } from "@mui/material";
-
 import AddIcon from "@mui/icons-material/Add";
-
-import { useState } from "react";
-
 import { useSnackbar } from "notistack";
-
 import axios from "axios";
 
+import { PageHeader } from "../../components/common/PageHeader";
+import { PageActions } from "../../components/common/PageActions";
+import { SearchField } from "../../components/common/SearchField";
 import { useOrders } from "../../hooks/useOrders";
-
 import { OrderTable } from "./components/OrderTable";
 import { OrderModal } from "./components/OrderModal";
-
 import type {
     CreateOrderDTO,
     Order
 } from "../../types/order";
-
 import { orderService } from "../../services/order.service";
 
-export function Orders() {
+import { ConfirmDialog } from "../../components/common/ConfirmDialog";
 
+export function Orders() {
     const {
         orders,
         loading,
@@ -35,151 +31,135 @@ export function Orders() {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const [modalOpen, setModalOpen] =
-        useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState<Order | undefined>();
+    const [search, setSearch] = useState("");
 
-    const [selectedOrder, setSelectedOrder] =
-        useState<Order | undefined>();
+    const [openConfirm, setOpenConfirm] = useState(false);
+
+    const [orderToDelete, setOrderToDelete] =
+        useState<Order | null>(null);
+
+    const filteredOrders = orders.filter(order =>
+        String(order.id).includes(search) ||
+        order.status.toLowerCase().includes(search.toLowerCase()) ||
+        order.client.name.toLowerCase().includes(search.toLowerCase()) ||
+        String(order.total).includes(search)
+    );
 
     function handleCreate() {
-
         setSelectedOrder(undefined);
-
         setModalOpen(true);
-
     }
 
     function handleEdit(order: Order) {
-
         setSelectedOrder(order);
-
         setModalOpen(true);
-
     }
 
     function handleClose() {
-
         setModalOpen(false);
-
         setSelectedOrder(undefined);
-
     }
 
-    async function handleSubmit(
-        data: CreateOrderDTO
-    ) {
 
+    async function handleSubmit(data: CreateOrderDTO) {
         try {
-
             if (selectedOrder) {
+                // Envia os dados completos do formulário na edição
+                await orderService.update(selectedOrder.id, {
+                    clientId: data.clientId,
+                    items: data.items,
+                    status: selectedOrder.status 
+                });
 
-                await orderService.update(
-                    selectedOrder.id,
-                    {
-                        status: "CONCLUÍDO"
-                    }
-                );
-
-                enqueueSnackbar(
-                    "Pedido atualizado com sucesso!",
-                    {
-                        variant: "success"
-                    }
-                );
-
+                enqueueSnackbar("Pedido atualizado com sucesso!", {
+                    variant: "success"
+                });
             } else {
-
                 await orderService.create(data);
-
-                enqueueSnackbar(
-                    "Pedido criado com sucesso!",
-                    {
-                        variant: "success"
-                    }
-                );
-
+                enqueueSnackbar("Pedido criado com sucesso!", {
+                    variant: "success"
+                });
             }
 
             handleClose();
-
             await loadOrders();
-
         } catch (error) {
-
             if (axios.isAxiosError(error)) {
-
                 enqueueSnackbar(
-                    error.response?.data.message ??
-                    "Erro ao salvar pedido.",
-                    {
-                        variant: "error"
-                    }
+                    error.response?.data.message ?? "Erro ao salvar pedido.",
+                    { variant: "error" }
                 );
-
             } else {
-
-                enqueueSnackbar(
-                    "Erro inesperado.",
-                    {
-                        variant: "error"
-                    }
-                );
-
+                enqueueSnackbar("Erro inesperado.", {
+                    variant: "error"
+                });
             }
-
         }
-
     }
 
     function handleDelete(order: Order) {
+        setOrderToDelete(order);
+        setOpenConfirm(true);
+    }
 
-        if (
-            !window.confirm(
-                `Deseja excluir o pedido #${order.id}?`
-            )
-        ) {
+    async function handleConfirmDelete() {
 
+        if (!orderToDelete) {
             return;
-
         }
 
-        deleteOrder(order.id);
+        await deleteOrder(orderToDelete.id);
 
+        setOpenConfirm(false);
+        setOrderToDelete(null);
+    }
+
+    function handleCloseConfirm() {
+
+        setOpenConfirm(false);
+        setOrderToDelete(null);
     }
 
     return (
-
-        <Box>
-
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 3
-                }}
+        <>
+            <PageHeader
+                title="Pedidos"
+                subtitle="Gerencie os pedidos cadastrados."
             >
+                <PageActions>
+                    <SearchField
+                        value={search}
+                        onChange={setSearch}
+                    />
 
-                <Typography variant="h4">
-                    Pedidos
-                </Typography>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreate}
+                    >
+                        <Box
+                            component="span"
+                            sx={{
+                                display: { xs: "none", sm: "inline" }
+                            }}
+                        >
+                            Novo&nbsp;
+                        </Box>
+                        Pedido
+                    </Button>
+                </PageActions>
+            </PageHeader>
 
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreate}
-                >
-                    Novo pedido
-                </Button>
-
+            <Box sx={{ mt: 3 }}>
+                <OrderTable
+                    orders={filteredOrders}
+                    loading={loading}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                />
             </Box>
-
-            <OrderTable
-                orders={orders}
-                loading={loading}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-            />
 
             <OrderModal
                 open={modalOpen}
@@ -188,8 +168,15 @@ export function Orders() {
                 onSubmit={handleSubmit}
             />
 
-        </Box>
-
+            <ConfirmDialog
+                open={openConfirm}
+                title="Excluir Pedido"
+                message={
+                    `Deseja realmente excluir o pedido #${orderToDelete?.id}?`
+                }
+                onClose={handleCloseConfirm}
+                onConfirm={handleConfirmDelete}
+            />
+        </>
     );
-
 }

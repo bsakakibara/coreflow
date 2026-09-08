@@ -163,6 +163,20 @@ export class ClientsService {
         if (!client) {
             throw new AppError("Cliente não encontrado.", 404);
         }
+        
+        // Se o cliente tiver pedido quando for excluir
+        const ordersCount = await prisma.order.count({
+            where: {
+                clientId: id
+            }
+        });
+
+        if (ordersCount > 0) {
+            throw new AppError(
+                "Não é possível excluir este cliente porque existem pedidos vinculados a ele.",
+                409
+            );
+        }
 
         await prisma.client.delete({
             where: { id }

@@ -1,6 +1,7 @@
 import {
     Box,
     Divider,
+    Drawer,
     List,
     ListItemButton,
     ListItemIcon,
@@ -25,7 +26,15 @@ interface MenuItem {
     roles?: string[];
 }
 
-export function Sidebar() {
+interface SidebarProps {
+    mobileOpen: boolean;
+    onMobileClose: () => void;
+}
+
+export function Sidebar({
+    mobileOpen,
+    onMobileClose
+}: SidebarProps) {
 
     const location = useLocation();
     const { user } = useAuth();
@@ -70,45 +79,45 @@ export function Sidebar() {
             (user && menu.roles.includes(user.role))
     );
 
-    return (
+    const sidebarContent = (
+
         <Box
             sx={{
                 width: 260,
-                minWidth: 260,
-                backgroundColor: "#0f172a",
-                color: "#fff",
+                height: "100%",
+                backgroundColor: "background.paper",
+                color: "text.primary",
                 display: "flex",
                 flexDirection: "column"
             }}
         >
+
             <Box
                 sx={{
                     p: 3,
                     textAlign: "center"
                 }}
             >
+
                 <Typography
                     variant="h5"
-                    sx={{ fontWeight: "bold" }}
+                    sx={{
+                        fontWeight: "bold"
+                    }}
                 >
                     CoreFlow
                 </Typography>
 
                 <Typography
                     variant="body2"
-                    sx={{
-                        color: "#94a3b8"
-                    }}
+                    color="text.secondary"
                 >
                     Enterprise System
                 </Typography>
+
             </Box>
 
-            <Divider
-                sx={{
-                    borderColor: "#1e293b"
-                }}
-            />
+            <Divider />
 
             <List sx={{ mt: 2 }}>
 
@@ -118,22 +127,27 @@ export function Sidebar() {
                         key={menu.path}
                         component={NavLink}
                         to={menu.path}
-                        selected={location.pathname === menu.path}
+                        selected={
+                            location.pathname === menu.path
+                        }
+                        onClick={onMobileClose}
                         sx={{
                             mx: 1,
                             mb: 1,
                             borderRadius: 2,
 
                             "&.Mui-selected": {
-                                backgroundColor: "#2563eb"
+                                backgroundColor: "primary.main",
+                                color: "#fff"
                             },
 
                             "&.Mui-selected:hover": {
-                                backgroundColor: "#1d4ed8"
+                                backgroundColor: "primary.dark"
                             },
 
                             "&:hover": {
-                                backgroundColor: "#1e293b"
+                                backgroundColor:
+                                    "action.hover"
                             }
                         }}
                     >
@@ -147,7 +161,9 @@ export function Sidebar() {
                             {menu.icon}
                         </ListItemIcon>
 
-                        <ListItemText primary={menu.title} />
+                        <ListItemText
+                            primary={menu.title}
+                        />
 
                     </ListItemButton>
 
@@ -156,5 +172,42 @@ export function Sidebar() {
             </List>
 
         </Box>
+
+    );
+
+    return (
+        <>
+            {/* Desktop */}
+            <Box
+                sx={{
+                    display: {
+                        xs: "none",
+                        md: "block"
+                    }
+                }}
+            >
+                {sidebarContent}
+            </Box>
+
+            {/* Mobile */}
+            <Drawer
+                open={mobileOpen}
+                onClose={onMobileClose}
+                sx={{
+                    display: {
+                        xs: "block",
+                        md: "none"
+                    },
+
+                    "& .MuiDrawer-paper": {
+                        width: 260,
+                        backgroundColor: "background.paper",
+                        color: "text.primary"
+                    }
+                }}
+            >
+                {sidebarContent}
+            </Drawer>
+        </>
     );
 }

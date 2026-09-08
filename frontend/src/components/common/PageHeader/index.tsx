@@ -20,14 +20,15 @@ export function PageHeader({
         <Box
             sx={{
                 display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
                 justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: { xs: "stretch", sm: "center" },
+                gap: { xs: 2, sm: 3 },
                 mb: 4
             }}
         >
-
+            {/* Título + Subtítulo */}
             <Box>
-
                 <Typography
                     variant="h4"
                     sx={{
@@ -38,22 +39,30 @@ export function PageHeader({
                 </Typography>
 
                 {subtitle && (
-
                     <Typography
                         color="text.secondary"
                         sx={{
-                            mt: 1
+                            mt: 0.5
                         }}
                     >
                         {subtitle}
                     </Typography>
-
                 )}
-
             </Box>
 
-            {children}
-
+            {/* Ações (Search + Botão) */}
+            {children && (
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        gap: 1.5,
+                        width: { xs: "100%", sm: "auto" }
+                    }}
+                >
+                    {children}
+                </Box>
+            )}
         </Box>
 
     );

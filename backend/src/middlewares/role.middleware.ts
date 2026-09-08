@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { prisma } from "../database/prisma";
 import { Role } from "../generated/prisma/enums";
 
 export function roleMiddleware(roles: Role[]) {

@@ -13,7 +13,11 @@ import {
     TableHead,
     TableRow,
     TextField,
-    Typography
+    Typography,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -33,7 +37,8 @@ import { orderSchema } from "../../../../schemas/order.schema";
 
 import type {
     CreateOrderDTO,
-    Order
+    Order,
+    OrderStatus
 } from "../../../../types/order";
 
 import type { Client } from "../../../../types/client";
@@ -41,6 +46,7 @@ import type { Product } from "../../../../types/product";
 
 import { clientService } from "../../../../services/client.service";
 import { productService } from "../../../../services/product.service";
+import { ConfirmDialog } from "../../../../components/common/ConfirmDialog";
 
 interface OrderFormProps {
 
@@ -71,6 +77,11 @@ export function OrderForm({
 
     const [selectedQuantity, setSelectedQuantity] =
         useState(1);
+
+    const [itemToRemove, setItemToRemove] =
+        useState<number | null>(null);
+
+    const [status, setStatus] = useState<OrderStatus>("PENDENTE");
 
     const {
         control,
@@ -126,6 +137,30 @@ export function OrderForm({
         loadData();
 
     }, []);
+
+    function handleRemoveItem(index: number) {
+
+        setItemToRemove(index);
+
+    }
+
+    function handleConfirmRemoveItem() {
+
+        if (itemToRemove === null) {
+            return;
+        }
+
+        remove(itemToRemove);
+
+        setItemToRemove(null);
+
+    }
+
+    function handleCancelRemoveItem() {
+
+        setItemToRemove(null);
+
+    }
 
     function handleAddProduct() {
 
@@ -252,9 +287,38 @@ export function OrderForm({
 
                             )}
                         />
-
                     )}
                 />
+                {order && (
+                    <FormControl fullWidth>
+                        <InputLabel id="order-status-label">
+                            Status
+                        </InputLabel>
+
+                        <Select
+                            labelId="order-status-label"
+                            label="Status"
+                            value={status}
+                            onChange={(event) =>
+                                setStatus(
+                                    event.target.value as OrderStatus
+                                )
+                            }
+                        >
+                            <MenuItem value="PENDENTE">
+                                Pendente
+                            </MenuItem>
+
+                            <MenuItem value="CONCLUIDO">
+                                Concluído
+                            </MenuItem>
+
+                            <MenuItem value="CANCELADO">
+                                Cancelado
+                            </MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
 
                 <Divider />
 
@@ -455,6 +519,7 @@ export function OrderForm({
                                                         items[index]
                                                             ?.quantity ?? 0
                                                     ).toLocaleString(
+
                                                         "pt-BR",
                                                         {
                                                             style:
@@ -471,12 +536,10 @@ export function OrderForm({
                                                     <IconButton
                                                         color="error"
                                                         onClick={() =>
-                                                            remove(index)
+                                                            handleRemoveItem(index)
                                                         }
                                                     >
-
                                                         <DeleteIcon />
-
                                                     </IconButton>
 
                                                 </TableCell>
@@ -543,6 +606,14 @@ export function OrderForm({
                 </Stack>
 
             </Stack>
+
+            <ConfirmDialog
+                open={itemToRemove !== null}
+                title="Remover produto"
+                message="Deseja realmente remover este produto do pedido?"
+                onClose={handleCancelRemoveItem}
+                onConfirm={handleConfirmRemoveItem}
+            />
 
         </Box>
 

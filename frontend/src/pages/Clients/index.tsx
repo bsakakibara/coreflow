@@ -132,7 +132,15 @@ export function Clients() {
                         startIcon={<AddIcon />}
                         onClick={handleCreate}
                     >
-                        Novo Cliente
+                        <Box
+                            component="span"
+                            sx={{
+                                display: { xs: "none", sm: "inline" }
+                            }}
+                        >
+                            Novo&nbsp;
+                        </Box>
+                        Cliente
                     </Button>
 
                 </PageActions>

@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { ThemeProvider } from "@mui/material/styles";
+import {
+  ThemeProvider as MuiThemeProvider
+} from "@mui/material/styles";
+
 import CssBaseline from "@mui/material/CssBaseline";
 
 import "@fontsource/roboto/400.css";
@@ -9,14 +12,26 @@ import "@fontsource/roboto/400.css";
 import "./styles/global.css";
 
 import App from "./App";
-import { theme } from "./theme/theme";
+
+import { createAppTheme } from "./theme/theme";
+
+import {
+  ThemeProvider,
+  useTheme
+} from "./contexts/ThemeContext";
+
 import { AuthProvider } from "./contexts/AuthContext";
+
 import { SnackbarProvider } from "notistack";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+function AppTheme() {
 
-    <ThemeProvider theme={theme}>
+  const { mode } = useTheme();
+
+  const theme = createAppTheme(mode);
+
+  return (
+    <MuiThemeProvider theme={theme}>
 
       <CssBaseline />
 
@@ -36,6 +51,20 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </AuthProvider>
 
       </SnackbarProvider>
+
+    </MuiThemeProvider>
+  );
+}
+
+ReactDOM.createRoot(
+  document.getElementById("root")!
+).render(
+
+  <React.StrictMode>
+
+    <ThemeProvider>
+
+      <AppTheme />
 
     </ThemeProvider>
 

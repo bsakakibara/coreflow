@@ -8,6 +8,7 @@ import {
 interface DashboardCardProps {
     title: string;
     value: string | number;
+    subtitle?: string;
     icon: React.ReactNode;
     color: string;
 }
@@ -15,18 +16,20 @@ interface DashboardCardProps {
 export function DashboardCard({
     title,
     value,
+    subtitle,
     icon,
     color
 }: DashboardCardProps) {
 
     return (
-
         <Card
             elevation={0}
             sx={{
+                height: "100%",
                 borderRadius: 3,
-                border: "1px solid #e5e7eb",
-                transition: ".2s",
+                border: "1px solid",
+                borderColor: "divider",
+                transition: "all .2s ease",
 
                 "&:hover": {
                     transform: "translateY(-3px)",
@@ -34,19 +37,21 @@ export function DashboardCard({
                 }
             }}
         >
-
-            <CardContent>
-                
+            <CardContent
+                sx={{
+                    p: 2.5
+                }}
+            >
                 <Box
                     sx={{
                         display: "flex",
                         justifyContent: "space-between",
-                        alignItems: "center"
+                        alignItems: "flex-start",
+                        gap: 2
                     }}
                 >
 
                     <Box>
-
                         <Typography
                             variant="body2"
                             color="text.secondary"
@@ -58,19 +63,33 @@ export function DashboardCard({
                             variant="h4"
                             sx={{
                                 mt: 1,
-                                fontWeight: 700
+                                fontWeight: 700,
+                                lineHeight: 1.2
                             }}
                         >
                             {value}
                         </Typography>
 
+                        {subtitle && (
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
+                                    display: "block",
+                                    mt: 1
+                                }}
+                            >
+                                {subtitle}
+                            </Typography>
+                        )}
                     </Box>
 
                     <Box
                         sx={{
                             width: 52,
                             height: 52,
-                            borderRadius: "50%",
+                            minWidth: 52,
+                            borderRadius: 2.5,
                             backgroundColor: color,
                             display: "flex",
                             justifyContent: "center",
@@ -82,11 +101,7 @@ export function DashboardCard({
                     </Box>
 
                 </Box>
-
             </CardContent>
-
         </Card>
-
     );
-
 }

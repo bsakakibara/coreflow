@@ -12,6 +12,8 @@ import {
     useForm
 } from "react-hook-form";
 
+import { NumericFormat } from "react-number-format";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { productSchema } from "../../../../schemas/product.schema";
@@ -209,30 +211,23 @@ export function ProductForm({
                         control={control}
                         render={({ field }) => (
 
-                            <TextField
-
-                                {...field}
-
+                            <NumericFormat
+                                customInput={TextField}
                                 fullWidth
-
-                                type="number"
-
                                 label="Preço"
-
+                                value={field.value}
+                                thousandSeparator="."
+                                decimalSeparator=","
+                                decimalScale={2}
+                                fixedDecimalScale
+                                prefix="R$ "
+                                allowNegative={false}
+                                valueIsNumericString
+                                onValueChange={(values) => {
+                                    field.onChange(values.floatValue ?? 0);
+                                }}
                                 error={!!errors.price}
-
                                 helperText={errors.price?.message}
-
-                                onChange={(e) =>
-
-                                    field.onChange(
-
-                                        Number(e.target.value)
-
-                                    )
-
-                                }
-
                             />
 
                         )}

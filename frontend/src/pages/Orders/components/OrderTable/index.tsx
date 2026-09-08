@@ -160,7 +160,7 @@ export function OrderTable({
                                             color={
                                                 order.status === "PENDENTE"
                                                     ? "warning"
-                                                    : order.status === "CONCLUÍDO"
+                                                    : order.status === "CONCLUIDO"
                                                         ? "success"
                                                         : "default"
                                             }
