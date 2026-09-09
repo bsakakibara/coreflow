@@ -36,7 +36,11 @@ export class ReportsService {
 
         const totalOrders = orders.length;
 
-        const totalSales = orders.reduce(
+        const validSalesOrders = orders.filter(
+            (order) => order.status !== "CANCELADO"
+        );
+
+        const totalSales = validSalesOrders.reduce(
             (total, order) =>
                 total + Number(order.total),
             0
@@ -84,6 +88,10 @@ export class ReportsService {
                         Number(order.total)
                 }
             );
+
+        }
+
+        for (const order of validSalesOrders) {
 
             /*
              * Agrupa vendas por mês

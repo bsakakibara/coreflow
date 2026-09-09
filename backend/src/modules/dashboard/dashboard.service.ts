@@ -67,19 +67,31 @@ export class DashboardService {
                     createdAt: {
                         gte: startOfMonth,
                         lt: startOfNextMonth
+                    },
+                    status: {
+                        not: "CANCELADO"
                     }
                 }
             })
         ]);
 
         const ordersByMonth = await prisma.order.findMany({
+
+            where: {
+                status: {
+                    not: "CANCELADO"
+                }
+            },
+
             select: {
                 total: true,
                 createdAt: true
             },
+
             orderBy: {
                 createdAt: "asc"
             }
+
         });
 
         const chartMap = new Map<string, number>();

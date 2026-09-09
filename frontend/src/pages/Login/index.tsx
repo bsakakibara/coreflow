@@ -65,7 +65,7 @@ export function Login() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "#f5f7fb"
+                backgroundColor: "background.default"
             }}
         >
 
@@ -74,7 +74,8 @@ export function Login() {
                 sx={{
                     width: 420,
                     padding: 5,
-                    borderRadius: 3
+                    borderRadius: 3,
+                    backgroundColor: "background.default"
                 }}
             >
 
