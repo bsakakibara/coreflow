@@ -377,7 +377,7 @@ A aplicação possui uma API REST responsável pela comunicação entre frontend
 Principais recursos:
 
 ```text
-POST   /auth/login
+POST   /login
 
 GET    /users
 POST   /users
@@ -716,7 +716,7 @@ A arquitetura do projeto permite futuras evoluções, como:
 
 * Paginação server-side
 * Filtros avançados
-* Relatórios
+* Relatórios avançados
 * Exportação de dados
 * Auditoria de operações
 * Testes automatizados de integração
