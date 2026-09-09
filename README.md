@@ -28,7 +28,8 @@ Mais do que implementar operações de cadastro, o objetivo foi construir uma ap
 - Total de usuários, clientes, produtos e pedidos
 - Indicadores de pedidos e vendas do mês
 - Gráfico de vendas por período
-- Distribuição de pedidos por status
+- Distribuição de pedidos por status com percentuais
+- Indicadores de vendas desconsiderando pedidos cancelados
 - Dados obtidos diretamente da API
 - Interface responsiva
 - Suporte a tema claro e escuro
@@ -76,6 +77,17 @@ Mais do que implementar operações de cadastro, o objetivo foi construir uma ap
 - Autenticação através de JWT
 - Autorização baseada em roles
 - Gerenciamento restrito a administradores
+
+### Relatórios
+
+- Visão consolidada dos indicadores do sistema
+- Total de pedidos e vendas
+- Distribuição de pedidos por status
+- Ranking de produtos mais vendidos
+- Gráfico de vendas por período
+- Exportação de relatório em CSV
+- Arquivo compatível com ferramentas de planilha
+- Interface responsiva
 
 ---
 
@@ -145,6 +157,18 @@ Também existem proteções para impedir operações inválidas, como:
 * Editar itens de pedidos que não estão pendentes
 * Concluir pedidos cancelados
 
+### Indicadores de vendas
+
+Para manter os indicadores financeiros consistentes, pedidos cancelados não são considerados no faturamento.
+
+Dessa forma:
+
+* Pedidos cancelados continuam contabilizados no total de pedidos
+* Pedidos cancelados continuam visíveis na distribuição por status
+* Pedidos cancelados não compõem o total de vendas
+* Pedidos cancelados não compõem o gráfico de vendas
+* Pedidos cancelados não são considerados no ranking de produtos mais vendidos
+
 ---
 
 # Segurança
@@ -213,6 +237,7 @@ backend/
 │   │   ├── products/
 │   │   ├── orders/
 │   │   ├── dashboard/
+│   │   ├── reports/
 │   │   └── status/
 │   │
 │   ├── middlewares/
@@ -402,6 +427,8 @@ DELETE /orders/:id
 
 GET    /dashboard
 
+GET    /reports
+
 GET    /status
 ```
 
@@ -528,7 +555,9 @@ Durante o desenvolvimento foram realizados testes diretamente na API e na aplica
 * [x] Consumo da API
 * [x] Estados de carregamento
 * [x] Tratamento de erros
-* [x] Dashboard com dados reais
+* [x] Dashboard com percentuais por status
+* [x] Relatórios com dados reais
+* [x] Exportação de relatório em CSV
 
 ---
 
@@ -717,7 +746,7 @@ A arquitetura do projeto permite futuras evoluções, como:
 * Paginação server-side
 * Filtros avançados
 * Relatórios avançados
-* Exportação de dados
+* Exportação em formatos adicionais, como PDF e XLSX
 * Auditoria de operações
 * Testes automatizados de integração
 * Testes E2E

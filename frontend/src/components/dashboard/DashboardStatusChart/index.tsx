@@ -11,7 +11,6 @@ import {
     Pie,
     Cell,
     Tooltip,
-    Legend
 } from "recharts";
 
 import type { DashboardStatusItem } from "../../../types/dashboard";
@@ -36,9 +35,18 @@ export function DashboardStatusChart({
     data
 }: DashboardStatusChartProps) {
 
+    const totalOrders = data.reduce(
+        (total, item) => total + item.total,
+        0
+    );
+
     const chartData = data.map(item => ({
         ...item,
-        label: STATUS_LABELS[item.status]
+        label: STATUS_LABELS[item.status],
+        percentage:
+            totalOrders > 0
+                ? (item.total / totalOrders) * 100
+                : 0
     }));
 
     return (
@@ -70,45 +78,101 @@ export function DashboardStatusChart({
                 <Box
                     sx={{
                         width: "100%",
-                        height: 300,
                         mt: 2
                     }}
                 >
-                    <ResponsiveContainer
-                        width="100%"
-                        height="100%"
+                    <Box
+                        sx={{
+                            width: "100%",
+                            height: 230
+                        }}
                     >
-                        <PieChart>
-                            <Pie
-                                data={chartData}
-                                dataKey="total"
-                                nameKey="label"
-                                cx="50%"
-                                cy="45%"
-                                innerRadius={65}
-                                outerRadius={100}
-                                paddingAngle={3}
+                        <ResponsiveContainer
+                            width="100%"
+                            height="100%"
+                        >
+                            <PieChart>
+                                <Pie
+                                    data={chartData}
+                                    dataKey="total"
+                                    nameKey="label"
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={90}
+                                    paddingAngle={3}
+                                >
+                                    {chartData.map(item => (
+                                        <Cell
+                                            key={item.status}
+                                            fill={
+                                                STATUS_COLORS[item.status]
+                                            }
+                                        />
+                                    ))}
+                                </Pie>
+
+                                <Tooltip
+                                    formatter={(value, _name, item) => [
+                                        `${value} pedidos (${item.payload.percentage.toFixed(1)}%)`,
+                                        item.payload.label
+                                    ]}
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </Box>
+
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                            gap: {
+                                xs: 1.5,
+                                sm: 2
+                            },
+                            mt: 1
+                        }}
+                    >
+                        {chartData.map((item) => (
+                            <Box
+                                key={item.status}
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 0.75
+                                }}
                             >
-                                {chartData.map(item => (
-                                    <Cell
-                                        key={item.status}
-                                        fill={
+                                <Box
+                                    sx={{
+                                        width: 10,
+                                        height: 10,
+                                        borderRadius: 0.5,
+                                        flexShrink: 0,
+                                        backgroundColor:
                                             STATUS_COLORS[item.status]
-                                        }
-                                    />
-                                ))}
-                            </Pie>
+                                    }}
+                                />
 
-                            <Tooltip
-                                formatter={(value) => [
-                                    value,
-                                    "Pedidos"
-                                ]}
-                            />
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    {item.label}
+                                </Typography>
 
-                            <Legend />
-                        </PieChart>
-                    </ResponsiveContainer>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontWeight: 700
+                                    }}
+                                >
+                                    {item.percentage.toFixed(1)}%
+                                </Typography>
+                            </Box>
+                        ))}
+                    </Box>
                 </Box>
             </CardContent>
         </Card>

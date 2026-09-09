@@ -1,5 +1,6 @@
 import {
     Box,
+    Button,
     Card,
     CardContent,
     CircularProgress,
@@ -20,12 +21,102 @@ import { PageHeader } from "../../components/common/PageHeader";
 
 import { useReports } from "../../hooks/useReports";
 
+import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+
 export function Reports() {
 
     const {
         reports,
         loading
     } = useReports();
+
+    function exportReportsToCsv() {
+
+        if (!reports) {
+            return;
+        }
+
+        const rows = [
+            ["RELATÓRIO COREFLOW"],
+            [],
+            ["RESUMO"],
+            ["Total de pedidos", reports.totalOrders],
+            [
+                "Total de vendas",
+                reports.totalSales.toFixed(2)
+            ],
+            [],
+            ["PEDIDOS POR STATUS"],
+            [
+                "Status",
+                "Quantidade",
+                "Total"
+            ],
+            ...reports.status.map(item => [
+                item.status,
+                item.quantity,
+                item.total.toFixed(2)
+            ]),
+            [],
+            ["PRODUTOS MAIS VENDIDOS"],
+            [
+                "Produto",
+                "Quantidade",
+                "Total"
+            ],
+            ...reports.topProducts.map(product => [
+                product.productName,
+                product.quantity,
+                product.total.toFixed(2)
+            ]),
+            [],
+            ["VENDAS POR MÊS"],
+            [
+                "Mês",
+                "Total"
+            ],
+            ...reports.chart.map(item => [
+                item.month,
+                item.total.toFixed(2)
+            ])
+        ];
+
+        const csvContent = rows
+            .map(row =>
+                row
+                    .map(value =>
+                        `"${String(value ?? "").replace(/"/g, '""')}"`
+                    )
+                    .join(";")
+            )
+            .join("\n");
+
+        const blob = new Blob(
+            ["\uFEFF" + csvContent],
+            {
+                type: "text/csv;charset=utf-8;"
+            }
+        );
+
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+
+        link.href = url;
+
+        link.download =
+            `coreflow-relatorio-${new Date()
+                .toISOString()
+                .slice(0, 10)}.csv`;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
+    }
 
     if (loading) {
 
@@ -70,7 +161,22 @@ export function Reports() {
             <PageHeader
                 title="Relatórios"
                 subtitle="Acompanhe os resultados e indicadores do sistema."
-            />
+            >
+                <Button
+                    variant="contained"
+                    startIcon={<FileDownloadOutlinedIcon />}
+                    onClick={exportReportsToCsv}
+                    sx={{
+                        whiteSpace: "nowrap",
+                        width: {
+                            xs: "100%",
+                            sm: "auto"
+                        }
+                    }}
+                >
+                    Exportar CSV
+                </Button>
+            </PageHeader>
 
             {/* Indicadores */}
 
