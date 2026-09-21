@@ -9,7 +9,11 @@ import {
     TextField,
     Typography,
     Alert,
-    CircularProgress
+    CircularProgress,
+    DialogContent,
+    DialogActions,
+    Dialog,
+    DialogTitle
 } from "@mui/material";
 
 import { useForm } from "react-hook-form";
@@ -26,6 +30,11 @@ export function Login() {
 
 
     const [error, setError] = useState("");
+
+    const [forgotOpen, setForgotOpen] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState("");
+    const [forgotMessage, setForgotMessage] = useState("");
+    const [forgotLoading, setForgotLoading] = useState(false);
 
     const {
         register,
@@ -55,6 +64,38 @@ export function Login() {
 
         }
 
+    }
+
+    async function handleForgotPassword() {
+
+        if (!forgotEmail.trim()) {
+            setForgotMessage("Informe seu e-mail.");
+            return;
+        }
+
+        try {
+
+            setForgotLoading(true);
+            setForgotMessage("");
+
+            await authService.forgotPassword(forgotEmail.trim());
+
+            setForgotMessage(
+                "Se o e-mail estiver cadastrado, enviaremos instruções para recuperação de senha."
+            );
+
+        } catch (error) {
+
+            console.error(error);
+            setForgotMessage(
+                "Não foi possível solicitar a recuperação de senha."
+            );
+
+        } finally {
+
+            setForgotLoading(false);
+
+        }
     }
 
     return (
@@ -142,11 +183,82 @@ export function Login() {
 
                         </Button>
 
+                        <Button
+                            type="button"
+                            variant="text"
+                            onClick={() => {
+                                setForgotEmail("");
+                                setForgotMessage("");
+                                setForgotOpen(true);
+                            }}
+                        >
+                            Esqueceu sua senha?
+                        </Button>
+
                     </Stack>
 
                 </form>
 
             </Paper>
+
+            <Dialog
+                open={forgotOpen}
+                onClose={() => setForgotOpen(false)}
+                maxWidth="xs"
+                fullWidth
+            >
+                <DialogTitle>
+                    Recuperar senha
+                </DialogTitle>
+
+                <DialogContent>
+                    <Stack spacing={2} sx={{ mt: 1 }}>
+
+                        <Typography color="text.secondary">
+                            Informe seu e-mail para receber o link de recuperação.
+                        </Typography>
+
+                        <TextField
+                            label="E-mail"
+                            type="email"
+                            fullWidth
+                            value={forgotEmail}
+                            onChange={(event) => setForgotEmail(event.target.value)}
+                        />
+
+                        {forgotMessage && (
+                            <Alert severity="info">
+                                {forgotMessage}
+                            </Alert>
+                        )}
+
+                    </Stack>
+                </DialogContent>
+
+                <DialogActions>
+                    <Button
+                        onClick={() => setForgotOpen(false)}
+                        disabled={forgotLoading}
+                    >
+                        Fechar
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        onClick={handleForgotPassword}
+                        disabled={forgotLoading}
+                    >
+                        {forgotLoading ? (
+                            <CircularProgress
+                                size={20}
+                                color="inherit"
+                            />
+                        ) : (
+                            "Enviar"
+                        )}
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </Box>
 

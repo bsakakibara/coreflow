@@ -1,8 +1,16 @@
 import { prisma } from "../../database/prisma";
 import { AppError } from "../../errors/AppError";
+import { sendPasswordResetEmail } from "../../services/email.service";
 import { generateToken } from "../../utils/jwt";
-import { LoginDTO, LoginResponse, MeResponse } from "./auth.types";
+import {
+    ForgotPasswordDTO,
+    LoginDTO,
+    LoginResponse,
+    MeResponse,
+    ResetPasswordDTO
+} from "./auth.types";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 export class AuthService {
     async login(data: LoginDTO): Promise<LoginResponse> {
@@ -64,6 +72,80 @@ export class AuthService {
         }
 
         return user;
+    }
+
+    async forgotPassword(data: ForgotPasswordDTO): Promise<void> {
+
+        const user = await prisma.user.findUnique({
+            where: {
+                email: data.email
+            }
+        });
+
+        if (!user) {
+            return;
+        }
+
+        const resetToken = crypto.randomBytes(32).toString("hex");
+
+        const resetTokenHash = crypto
+            .createHash("sha256")
+            .update(resetToken)
+            .digest("hex");
+
+        const resetPasswordExpires = new Date(
+            Date.now() + 30 * 60 * 1000
+        );
+
+        await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                resetPasswordToken: resetTokenHash,
+                resetPasswordExpires
+            }
+        });
+
+        // O token original será enviado por e-mail no próximo passo.
+        await sendPasswordResetEmail({
+            to: user.email,
+            resetToken
+        });
+    }
+
+    async resetPassword(data: ResetPasswordDTO): Promise<void> {
+
+        const resetTokenHash = crypto
+            .createHash("sha256")
+            .update(data.token)
+            .digest("hex");
+
+        const user = await prisma.user.findFirst({
+            where: {
+                resetPasswordToken: resetTokenHash,
+                resetPasswordExpires: {
+                    gt: new Date()
+                }
+            }
+        });
+
+        if (!user) {
+            throw new AppError("Token inválido ou expirado.", 400);
+        }
+
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+
+        await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                password: hashedPassword,
+                resetPasswordToken: null,
+                resetPasswordExpires: null
+            }
+        });
     }
 
 }

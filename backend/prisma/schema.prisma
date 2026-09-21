@@ -33,6 +33,8 @@ model User {
   password  String
   role  Role @default(EMPLOYEE)
   createdAt DateTime  @default(now())
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
   updatedAt DateTime @updatedAt
 }
 
@@ -92,3 +94,4 @@ model OrderItem {
   quantity   Int
   price      Decimal   @db.Decimal(10,2)
 }
+

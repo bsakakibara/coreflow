@@ -9,12 +9,18 @@ import { Clients } from "../pages/Clients";
 import { Products } from "../pages/Products";
 import { Orders } from "../pages/Orders";
 import { Reports } from "../pages/Reports";
+import { ResetPassword } from "../pages/ResetPassword";
 
 export function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login />} />
+
+                <Route
+                    path="/reset-password"
+                    element={<ResetPassword />}
+                />
 
                 <Route
                     element={

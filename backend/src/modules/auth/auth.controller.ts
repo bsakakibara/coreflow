@@ -41,4 +41,46 @@ export class AuthController {
         }
 
     }
+
+    async forgotPassword(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+
+        try {
+
+            await authService.forgotPassword(req.body);
+
+            res.json({
+                message: "Se o e-mail estiver cadastrado, enviaremos instruções para recuperação de senha."
+            });
+
+        } catch (error) {
+
+            next(error);
+
+        }
+    }
+
+    async resetPassword(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+
+        try {
+
+            await authService.resetPassword(req.body);
+
+            res.json({
+                message: "Senha redefinida com sucesso."
+            });
+
+        } catch (error) {
+
+            next(error);
+
+        }
+    }
 }

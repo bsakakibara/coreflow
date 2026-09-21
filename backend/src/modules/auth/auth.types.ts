@@ -23,3 +23,11 @@ export interface MeResponse {
     createdAt: Date;
     updatedAt: Date;
 }
+export interface ForgotPasswordDTO {
+    email: string;
+}
+
+export interface ResetPasswordDTO {
+    token: string;
+    password: string;
+}
