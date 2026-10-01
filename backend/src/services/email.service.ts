@@ -9,7 +9,7 @@ export async function sendPasswordResetEmail({
 }: SendPasswordResetEmailParams): Promise<void> {
     const frontendUrl = process.env.FRONTEND_URL;
     const apiKey = process.env.BREVO_API_KEY;
-    const senderEmail = process.env.EMAIL_USER;
+    const senderEmail = process.env.EMAIL_FROM;
 
     if (!frontendUrl) {
         throw new Error("FRONTEND_URL não configurada.");
@@ -20,7 +20,7 @@ export async function sendPasswordResetEmail({
     }
 
     if (!senderEmail) {
-        throw new Error("EMAIL_USER não configurado.");
+        throw new Error("EMAIL_FROM não configurado.");
     }
 
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;

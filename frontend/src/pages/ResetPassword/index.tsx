@@ -14,7 +14,6 @@ import {
 import { authService } from "../../services/auth.service";
 
 export function ResetPassword() {
-
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
@@ -23,10 +22,10 @@ export function ResetPassword() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-
         event.preventDefault();
 
         setError("");
@@ -49,22 +48,18 @@ export function ResetPassword() {
         setIsSubmitting(true);
 
         try {
-
             await authService.resetPassword(token, password);
 
-            navigate("/");
-
+            setSuccess(true);
+            setPassword("");
+            setConfirmPassword("");
         } catch (error) {
-
             console.error(error);
             setError(
                 "Token inválido, expirado ou não foi possível redefinir a senha."
             );
-
         } finally {
-
             setIsSubmitting(false);
-
         }
     }
 
@@ -88,9 +83,7 @@ export function ResetPassword() {
                 }}
             >
                 <form onSubmit={handleSubmit}>
-
                     <Stack spacing={3}>
-
                         <Box>
                             <Typography
                                 variant="h4"
@@ -113,37 +106,51 @@ export function ResetPassword() {
                             </Alert>
                         )}
 
-                        <TextField
-                            label="Nova senha"
-                            type="password"
-                            fullWidth
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
-                        />
+                        {success && (
+                            <Alert severity="success">
+                                Senha redefinida com sucesso. Você já pode entrar com sua nova senha.
+                            </Alert>
+                        )}
 
-                        <TextField
-                            label="Confirmar nova senha"
-                            type="password"
-                            fullWidth
-                            value={confirmPassword}
-                            onChange={(event) => setConfirmPassword(event.target.value)}
-                        />
-
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            size="large"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <CircularProgress
-                                    size={22}
-                                    color="inherit"
+                        {!success && (
+                            <>
+                                <TextField
+                                    label="Nova senha"
+                                    type="password"
+                                    fullWidth
+                                    value={password}
+                                    onChange={(event) =>
+                                        setPassword(event.target.value)
+                                    }
                                 />
-                            ) : (
-                                "Redefinir senha"
-                            )}
-                        </Button>
+
+                                <TextField
+                                    label="Confirmar nova senha"
+                                    type="password"
+                                    fullWidth
+                                    value={confirmPassword}
+                                    onChange={(event) =>
+                                        setConfirmPassword(event.target.value)
+                                    }
+                                />
+
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <CircularProgress
+                                            size={22}
+                                            color="inherit"
+                                        />
+                                    ) : (
+                                        "Redefinir senha"
+                                    )}
+                                </Button>
+                            </>
+                        )}
 
                         <Button
                             type="button"
@@ -152,9 +159,7 @@ export function ResetPassword() {
                         >
                             Voltar para o login
                         </Button>
-
                     </Stack>
-
                 </form>
             </Paper>
         </Box>
