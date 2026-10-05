@@ -24,10 +24,8 @@ import { authService } from "../../services/auth.service";
 import { useAuth } from "../../contexts/AuthContext";
 
 export function Login() {
-
     const navigate = useNavigate();
     const { login } = useAuth();
-
 
     const [error, setError] = useState("");
 
@@ -35,6 +33,7 @@ export function Login() {
     const [forgotEmail, setForgotEmail] = useState("");
     const [forgotMessage, setForgotMessage] = useState("");
     const [forgotLoading, setForgotLoading] = useState(false);
+    const [forgotSuccess, setForgotSuccess] = useState(false);
 
     const {
         register,
@@ -45,9 +44,7 @@ export function Login() {
     });
 
     async function onSubmit(data: LoginSchema) {
-
         try {
-
             setError("");
 
             const response = await authService.login(data);
@@ -55,51 +52,44 @@ export function Login() {
             login(response.token, response.user);
 
             navigate("/dashboard");
-
         } catch (error) {
-
             console.log(error);
-
             setError("Email ou senha inválidos.");
-
         }
-
     }
 
     async function handleForgotPassword() {
-
         if (!forgotEmail.trim()) {
             setForgotMessage("Informe seu e-mail.");
             return;
         }
 
         try {
-
             setForgotLoading(true);
             setForgotMessage("");
+            setForgotSuccess(false);
 
             await authService.forgotPassword(forgotEmail.trim());
+
+            setForgotSuccess(true);
 
             setForgotMessage(
                 "Se o e-mail estiver cadastrado, enviaremos instruções para recuperação de senha."
             );
-
         } catch (error) {
-
             console.error(error);
+
+            setForgotSuccess(false);
+
             setForgotMessage(
                 "Não foi possível solicitar a recuperação de senha."
             );
-
         } finally {
-
             setForgotLoading(false);
-
         }
     }
 
     return (
-
         <Box
             sx={{
                 minHeight: "100vh",
@@ -109,7 +99,6 @@ export function Login() {
                 backgroundColor: "background.default"
             }}
         >
-
             <Paper
                 elevation={5}
                 sx={{
@@ -119,13 +108,9 @@ export function Login() {
                     backgroundColor: "background.default"
                 }}
             >
-
                 <form onSubmit={handleSubmit(onSubmit)}>
-
                     <Stack spacing={3}>
-
                         <Box>
-
                             <Typography
                                 variant="h4"
                                 align="center"
@@ -139,7 +124,6 @@ export function Login() {
                             >
                                 Enterprise Management System
                             </Typography>
-
                         </Box>
 
                         {error && (
@@ -171,7 +155,6 @@ export function Login() {
                             size="large"
                             disabled={isSubmitting}
                         >
-
                             {isSubmitting ? (
                                 <CircularProgress
                                     size={22}
@@ -180,7 +163,6 @@ export function Login() {
                             ) : (
                                 "Entrar"
                             )}
-
                         </Button>
 
                         <Button
@@ -189,16 +171,14 @@ export function Login() {
                             onClick={() => {
                                 setForgotEmail("");
                                 setForgotMessage("");
+                                setForgotSuccess(false);
                                 setForgotOpen(true);
                             }}
                         >
                             Esqueceu sua senha?
                         </Button>
-
                     </Stack>
-
                 </form>
-
             </Paper>
 
             <Dialog
@@ -213,7 +193,6 @@ export function Login() {
 
                 <DialogContent>
                     <Stack spacing={2} sx={{ mt: 1 }}>
-
                         <Typography color="text.secondary">
                             Informe seu e-mail para receber o link de recuperação.
                         </Typography>
@@ -223,7 +202,10 @@ export function Login() {
                             type="email"
                             fullWidth
                             value={forgotEmail}
-                            onChange={(event) => setForgotEmail(event.target.value)}
+                            onChange={(event) =>
+                                setForgotEmail(event.target.value)
+                            }
+                            disabled={forgotLoading || forgotSuccess}
                         />
 
                         {forgotMessage && (
@@ -231,7 +213,6 @@ export function Login() {
                                 {forgotMessage}
                             </Alert>
                         )}
-
                     </Stack>
                 </DialogContent>
 
@@ -243,25 +224,24 @@ export function Login() {
                         Fechar
                     </Button>
 
-                    <Button
-                        variant="contained"
-                        onClick={handleForgotPassword}
-                        disabled={forgotLoading}
-                    >
-                        {forgotLoading ? (
-                            <CircularProgress
-                                size={20}
-                                color="inherit"
-                            />
-                        ) : (
-                            "Enviar"
-                        )}
-                    </Button>
+                    {!forgotSuccess && (
+                        <Button
+                            variant="contained"
+                            onClick={handleForgotPassword}
+                            disabled={forgotLoading}
+                        >
+                            {forgotLoading ? (
+                                <CircularProgress
+                                    size={20}
+                                    color="inherit"
+                                />
+                            ) : (
+                                "Enviar"
+                            )}
+                        </Button>
+                    )}
                 </DialogActions>
             </Dialog>
-
         </Box>
-
     );
-
 }
