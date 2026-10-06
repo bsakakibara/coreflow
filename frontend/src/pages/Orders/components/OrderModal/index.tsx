@@ -9,6 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import type {
     CreateOrderDTO,
+    UpdateOrderDTO,
     Order
 } from "../../../../types/order";
 
@@ -22,7 +23,7 @@ interface OrderModalProps {
 
     onClose: () => void;
 
-    onSubmit: (data: CreateOrderDTO) => void;
+    onSubmit: (data: CreateOrderDTO | UpdateOrderDTO) => void;
 
 }
 
