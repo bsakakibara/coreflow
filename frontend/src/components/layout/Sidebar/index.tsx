@@ -95,26 +95,45 @@ export function Sidebar({
             <Box
                 sx={{
                     p: 3,
-                    textAlign: "center"
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 1.5
                 }}
             >
-
-                <Typography
-                    variant="h5"
+                <Box
+                    component="img"
+                    src="/coreflow-logo.png"
+                    alt="CoreFlow"
                     sx={{
-                        fontWeight: "bold"
+                        width: 48,
+                        height: 48,
+                        objectFit: "contain",
+                        flexShrink: 0
                     }}
-                >
-                    CoreFlow
-                </Typography>
+                />
 
-                <Typography
-                    variant="body2"
-                    color="text.secondary"
-                >
-                    Enterprise System
-                </Typography>
+                <Box sx={{ textAlign: "left" }}>
+                    <Typography
+                        variant="h5"
+                        sx={{
+                            fontWeight: "bold",
+                            lineHeight: 1.1
+                        }}
+                    >
+                        CoreFlow
+                    </Typography>
 
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                            whiteSpace: "nowrap"
+                        }}
+                    >
+                        Enterprise System
+                    </Typography>
+                </Box>
             </Box>
 
             <Divider />
