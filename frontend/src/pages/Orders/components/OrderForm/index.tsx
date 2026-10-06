@@ -37,6 +37,7 @@ import { orderSchema } from "../../../../schemas/order.schema";
 
 import type {
     CreateOrderDTO,
+    UpdateOrderDTO,
     Order,
     OrderStatus
 } from "../../../../types/order";
@@ -52,7 +53,7 @@ interface OrderFormProps {
 
     order?: Order;
 
-    onSubmit: (data: CreateOrderDTO) => void;
+    onSubmit: (data: CreateOrderDTO | UpdateOrderDTO) => void;
 
     onCancel: () => void;
 
@@ -201,6 +202,15 @@ export function OrderForm({
     }
 
     function handleFormSubmit(data: CreateOrderDTO) {
+
+        if (order) {
+            onSubmit({
+                ...data,
+                status
+            });
+
+            return;
+        }
 
         onSubmit(data);
 

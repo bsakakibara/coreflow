@@ -15,6 +15,7 @@ import { OrderTable } from "./components/OrderTable";
 import { OrderModal } from "./components/OrderModal";
 import type {
     CreateOrderDTO,
+    UpdateOrderDTO,
     Order
 } from "../../types/order";
 import { orderService } from "../../services/order.service";
@@ -63,21 +64,17 @@ export function Orders() {
     }
 
 
-    async function handleSubmit(data: CreateOrderDTO) {
+    async function handleSubmit(data: CreateOrderDTO | UpdateOrderDTO) {
         try {
             if (selectedOrder) {
-                // Envia os dados completos do formulário na edição
-                await orderService.update(selectedOrder.id, {
-                    clientId: data.clientId,
-                    items: data.items,
-                    status: selectedOrder.status 
-                });
+                await orderService.update(selectedOrder.id, data);
 
                 enqueueSnackbar("Pedido atualizado com sucesso!", {
                     variant: "success"
                 });
             } else {
-                await orderService.create(data);
+                await orderService.create(data as CreateOrderDTO);
+
                 enqueueSnackbar("Pedido criado com sucesso!", {
                     variant: "success"
                 });
