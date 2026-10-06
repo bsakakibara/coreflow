@@ -93,16 +93,35 @@ class ProductsService {
 
     }
 
-    async delete(id: number) {
+    async delete(id: number): Promise<boolean> {
 
-        return prisma.product.delete({
-
-            where: {
-                id
-            }
-
+        const product = await prisma.product.findUnique({
+            where: { id }
         });
 
+        if (!product) {
+            throw new AppError("Produto não encontrado.", 404);
+        }
+
+        // Se o produto estiver vinculado a algum pedido, impede a exclusão
+        const orderItemsCount = await prisma.orderItem.count({
+            where: {
+                productId: id
+            }
+        });
+
+        if (orderItemsCount > 0) {
+            throw new AppError(
+                "Não é possível excluir este produto porque existem pedidos vinculados a ele.",
+                409
+            );
+        }
+
+        await prisma.product.delete({
+            where: { id }
+        });
+
+        return true;
     }
 
 }
